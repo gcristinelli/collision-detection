@@ -14,6 +14,7 @@ struct Vec3 {
     Vec3 operator-(const Vec3& v) const { return {x-v.x, y-v.y, z-v.z}; }
     Vec3 operator*(double s) const { return {x*s, y*s, z*s}; }
     double length() const { return sqrt(x*x + y*y + z*z); }
+    double dot(const Vec3& v)  const { return x*v.x + y*v.y + z*v.z; }
     Vec3 normalized() const { double l = length(); return {x/l, y/l, z/l}; }
 };
 
@@ -28,7 +29,7 @@ struct Contact {
 };
 
 void velocityVerlet(std::vector<Particle>& particles, double dt,
-                    double stiffness, const Vec3& gravity,
+                    double stiffness, double dumping, const Vec3& gravity,
                     double planeAngle, double planeY);
 
 #endif //ASSIGNMENT_MOTION_H

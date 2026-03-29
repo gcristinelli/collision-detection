@@ -24,17 +24,24 @@ void computeForces(std::vector<Particle>& particles,
     }
 }
 
-void applyInclinedPlane(Particle& p, double angle, double planeY, double stiffness) {
-    // Plane equation: y = tan(angle) * x + planeY
-    double normalY = cos(angle);
-    double normalX = -sin(angle);
-    double dist = (p.pos.y - planeY - tan(angle) * p.pos.x) * normalY;
+void applyInclinedPlane(Particle& p, double angle, double planeY,
+                        double stiffness, double damping) {
+    double cosA = std::cos(angle);
+    double sinA = std::sin(angle);
+
+    // Plane equation: y = tan(angle) * z + planeY
+    // Normal: (0, cosA, -sinA)
+    double dist = cosA * (p.pos.y - planeY) - sinA * p.pos.z;
 
     if (dist < p.radius) {
         double overlap = p.radius - dist;
-        Vec3 normal = {normalX, normalY, 0};
-        double force = stiffness * overlap / p.mass;
-        p.acc = p.acc + normal * force;
+        Vec3   normal  = {0.0, cosA, -sinA};
+
+        double vn      = p.vel.dot(normal);
+        double forceMag = stiffness * overlap - damping * vn;
+        if (forceMag < 0) forceMag = 0;
+
+        p.acc = p.acc + normal * (forceMag / p.mass);
     }
 }
 
@@ -59,26 +66,27 @@ std::vector<Contact> detectContact(std::vector<Particle>& particles) {
 }
 
 void velocityVerlet(std::vector<Particle>& particles, double dt,
-                    double stiffness, const Vec3& gravity,
+                    double stiffness, double dumping, const Vec3& gravity,
                     double planeAngle, double planeY) {
 
-    // Step 1: Update positions and half-step velocities
-    for (auto& p : particles) {
-        p.pos = p.pos + p.vel * dt + p.acc * (0.5 * dt * dt);
-        //p.vel = p.vel + p.acc * (0.5 * dt);
+    // Step 1: Update positions and save accelerations
+    std::vector<Vec3> accOld(particles.size());
+    for (size_t i = 0; i < particles.size(); ++i) {
+        accOld[i]          = particles[i].acc;
+        particles[i].pos   = particles[i].pos + particles[i].vel * dt + particles[i].acc * (0.5 * dt * dt);
     }
 
-    // Step 2: Detect contacts and compute new forces
+    // Step 2: Detect contacts and update accelerations
     auto contacts = detectContact(particles);
     computeForces(particles, contacts, stiffness, gravity);
 
     // Apply boundary conditions
-    for (auto& p : particles) {
-        applyInclinedPlane(p, planeAngle, planeY, stiffness);
-    }
+    // for (auto& p : particles) {
+    //     applyInclinedPlane(p, planeAngle, planeY, stiffness, dumping);
+    // }
 
-    // Step 3: Complete velocity update
-    for (auto& p : particles) {
-        p.vel = p.vel + p.acc * (0.5 * dt);
+    // Step 3: Complete velocity Verlet algorithm by averaging new and old acceleration for the velocity
+    for (size_t i = 0; i < particles.size(); ++i) {
+        particles[i].vel = particles[i].vel + (accOld[i] + particles[i].acc) * (0.5 * dt);
     }
 }
