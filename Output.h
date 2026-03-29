@@ -11,4 +11,7 @@
 void writeVTK(const std::vector<Particle>& particles, int step,
               const std::string& prefix);
 
+void writePlaneVTK(double angle, double width, double depth,
+                   const std::string& prefix);
+
 #endif //ASSIGNMENT_OUTPUT_H

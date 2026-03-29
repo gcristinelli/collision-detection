@@ -37,6 +37,44 @@ std::filesystem::path create_folder() {
     return outputDir;
 }
 
+void writePlaneVTK(double angle, double width, double depth,
+                   const std::string& prefix) {
+    std::filesystem::path dir = create_folder();
+    std::ofstream file(dir / (prefix + ".vtk"));
+    if (!file) {
+        std::cerr << "Failed to open plane VTK file\n";
+        return;
+    }
+
+    double cosA  = std::cos(angle);
+    double sinA  = std::sin(angle);
+    double halfW = width / 2.0;
+    double halfD = depth / 2.0;
+
+    // Plane through origin: y*cosA + z*sinA = 0  →  y = -z * tanA
+    double z0 = -halfD, y0 = -std::tan(angle) * z0;
+    double z1 =  halfD, y1 = -std::tan(angle) * z1;
+
+    file << "# vtk DataFile Version 3.0\n";
+    file << "Inclined Plane\n";
+    file << "ASCII\n";
+    file << "DATASET POLYDATA\n";
+    file << "POINTS 4 float\n";
+    file << -halfW << " " << y0 << " " << z0 << "\n";  // p0
+    file << -halfW << " " << y1 << " " << z1 << "\n";  // p1
+    file <<  halfW << " " << y0 << " " << z0 << "\n";  // p2
+    file <<  halfW << " " << y1 << " " << z1 << "\n";  // p3
+
+    file << "\nPOLYGONS 2 8\n";
+    file << "3 0 1 2\n";
+    file << "3 1 3 2\n";
+
+    file << "\nPOINT_DATA 4\n";
+    file << "NORMALS normals float\n";
+    for (int i = 0; i < 4; ++i)
+        file << 0.0 << " " << cosA << " " << sinA << "\n";
+}
+
 void writeVTK(const std::vector<Particle>& particles, int step,
                      const std::string& prefix) {
     std::filesystem::path dir = create_folder();
