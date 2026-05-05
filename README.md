@@ -29,8 +29,8 @@ A high-performance, header-light **C++17** implementation of a three-dimensional
 ### Build with CMake
 
 ```bash
-git clone https://github.com/<your-username>/dem-simulator.git
-cd dem-simulator
+git clone https://github.com/<your-username>/collision-detection.git
+cd collision-detection
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build .
@@ -39,7 +39,7 @@ cmake --build .
 ### Build manually
 
 ```bash
-g++ -std=c++17 -O2 -o dem_sim main.cpp Motion.cpp Output.cpp
+g++ -std=c++17 -O2 -o collision-detection main.cpp Motion.cpp Output.cpp
 ```
 
 ### Run
