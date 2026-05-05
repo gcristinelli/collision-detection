@@ -30,6 +30,6 @@ struct Contact {
 
 void velocityVerlet(std::vector<Particle>& particles, double dt,
                     double stiffness, double dumping, const Vec3& gravity,
-                    double planeAngle, double planeY);
+                    double planeAngle, double planeZ);
 
 #endif //ASSIGNMENT_MOTION_H

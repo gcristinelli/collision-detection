@@ -24,22 +24,22 @@ void computeForces(std::vector<Particle>& particles,
     }
 }
 
-void applyInclinedPlane(Particle& p, double angle, double planeY,
+void applyInclinedPlane(Particle& p, double angle, double affz,
                         double stiffness, double damping) {
-    double cosA = std::cos(angle);
-    double sinA = std::sin(angle);
+    double tanA = std::tan(angle);
 
-    // Plane equation: y = tan(angle) * z + planeY
-    // Normal: (0, cosA, -sinA)
-    double dist = cosA * (p.pos.y - planeY) - sinA * p.pos.z;
+    Vec3 normal = {-tanA, 0.0, 1.0};
+    normal = normal.normalized();
+
+    double dist = (p.pos.z - tanA * p.pos.x - affz)
+                  / std::sqrt(1.0 + tanA * tanA);
 
     if (dist < p.radius) {
         double overlap = p.radius - dist;
-        Vec3   normal  = {0.0, cosA, -sinA};
+        double vn = p.vel.dot(normal);
 
-        double vn      = p.vel.dot(normal);
         double forceMag = stiffness * overlap - damping * vn;
-        if (forceMag < 0) forceMag = 0;
+        if (forceMag < 0.0) forceMag = 0.0;
 
         p.acc = p.acc + normal * (forceMag / p.mass);
     }
@@ -67,7 +67,7 @@ std::vector<Contact> detectContact(std::vector<Particle>& particles) {
 
 void velocityVerlet(std::vector<Particle>& particles, double dt,
                     double stiffness, double dumping, const Vec3& gravity,
-                    double planeAngle, double planeY) {
+                    double planeAngle, double planeZ) {
 
     // Step 1: Update positions and save accelerations
     std::vector<Vec3> accOld(particles.size());
@@ -81,9 +81,9 @@ void velocityVerlet(std::vector<Particle>& particles, double dt,
     computeForces(particles, contacts, stiffness, gravity);
 
     // Apply boundary conditions
-    // for (auto& p : particles) {
-    //     applyInclinedPlane(p, planeAngle, planeY, stiffness, dumping);
-    // }
+    for (auto& p : particles) {
+        applyInclinedPlane(p, planeAngle, planeZ, stiffness, dumping);
+    }
 
     // Step 3: Complete velocity Verlet algorithm by averaging new and old acceleration for the velocity
     for (size_t i = 0; i < particles.size(); ++i) {
