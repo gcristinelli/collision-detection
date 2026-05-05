@@ -1,8 +1,6 @@
 #include <iostream>
-#include <apache2/ap_compat.h>
 #include "Motion.h"
 #include "Output.h"
-#include <array>
 #include <vector>
 
 // TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
