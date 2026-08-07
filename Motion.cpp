@@ -6,6 +6,7 @@
 #include <cmath>
 #include <vector>
 #include <numeric>
+#include <algorithm>
 
 void computeForces(std::vector<Particle>& particles,
                    const std::vector<Contact>& contacts,

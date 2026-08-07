@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <cmath>
 
 #ifndef ASSIGNMENT_MOTION_H
 #define ASSIGNMENT_MOTION_H

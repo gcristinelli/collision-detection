@@ -3,10 +3,11 @@
 //
 
 #include <vector>
+#include <string>
 #include "Motion.h"
 
-#ifndef ASSIGNMENT_OUTPUT_H
-#define ASSIGNMENT_OUTPUT_H
+#ifndef DEM_OUTPUT_H
+#define DEM_OUTPUT_H
 
 void writeVTK(const std::vector<Particle>& particles, int step,
               const std::string& prefix);
