@@ -2,8 +2,8 @@
 // Created by Giacomo Cristinelli on 18/12/2025.
 //
 
-#include "Output.h"
-#include "Motion.h"
+#include "output.h"
+#include "motion.h"
 #include <vector>
 #include <iostream>
 #include <fstream>

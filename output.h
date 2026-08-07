@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <string>
-#include "Motion.h"
+#include "motion.h"
 
 #ifndef DEM_OUTPUT_H
 #define DEM_OUTPUT_H
