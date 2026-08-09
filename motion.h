@@ -1,12 +1,8 @@
-//
-// Created by Giacomo Cristinelli on 18/12/2025.
-//
-
 #include <vector>
 #include <cmath>
 
-#ifndef ASSIGNMENT_MOTION_H
-#define ASSIGNMENT_MOTION_H
+#ifndef MOTION_H
+#define MOTION_H
 
 struct Vec3 {
     double x, y, z;
@@ -28,4 +24,4 @@ void velocityVerlet(std::vector<Particle>& particles, double dt,
                     double stiffness, double dumping, const Vec3& gravity,
                     double planeAngle, double planeZ);
 
-#endif //ASSIGNMENT_MOTION_H
+#endif

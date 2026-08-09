@@ -1,7 +1,7 @@
 #include "motion.h"
 
-#ifndef ASSIGNMENT_CONTACT_H
-#define ASSIGNMENT_CONTACT_H
+#ifndef CONTACT_H
+#define CONTACT_H
 
 
 struct Contact {
