@@ -1,7 +1,3 @@
-//
-// Created by Giacomo Cristinelli on 18/12/2025.
-//
-
 #include "output.h"
 #include "motion.h"
 #include <vector>

@@ -24,11 +24,6 @@ struct Particle {
     double radius, mass;
 };
 
-struct Contact {
-    int i, j;
-    double overlap;
-};
-
 void velocityVerlet(std::vector<Particle>& particles, double dt,
                     double stiffness, double dumping, const Vec3& gravity,
                     double planeAngle, double planeZ);
