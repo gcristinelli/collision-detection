@@ -1,6 +1,4 @@
 #include "output.h"
-#include "motion.h"
-#include <vector>
 #include <iostream>
 #include <fstream>
 #include <string>

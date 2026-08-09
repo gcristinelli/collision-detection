@@ -1,10 +1,5 @@
-#include "motion.h"
-#include "contact.h"
 #include "boundary.h"
 #include <cmath>
-#include <vector>
-#include <numeric>
-#include <algorithm>
 
 
 void applyInclinedPlane(Particle& p, double angle, double affz,

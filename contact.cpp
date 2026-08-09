@@ -1,9 +1,7 @@
-#include <cmath>
 #include <vector>
 #include <numeric>
 #include <algorithm>
 #include "contact.h"
-#include "motion.h"
 
 
 std::vector<Contact> detectContact_SP(std::vector<Particle>& particles) {
