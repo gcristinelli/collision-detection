@@ -2,7 +2,7 @@ Simple discrete element method for spheres on an inclined plane, using the Verle
 
 To build/run:
 
-g++ -std=c++17 main.cpp motion.cpp output.cpp -o DEM; ./DEM
+g++ -std=c++17 main.cpp motion.cpp output.cpp contact.cpp boundary.cpp -o DEM; ./DEM
 
 
 To visualise on Paraview:
