@@ -36,9 +36,7 @@ std::filesystem::path create_folder() {
     return outputDir;
 }
 
-void writePlaneVTK(double angle, double width, double depth,
-                   double affz,
-                   const std::string& prefix) {
+void writeBoundaryVTK(const Boundary& boundary, const std::string& prefix) {
     std::filesystem::path dir = create_folder();
     std::ofstream file(dir / (prefix + ".vtk"));
     if (!file) {
@@ -46,21 +44,15 @@ void writePlaneVTK(double angle, double width, double depth,
         return;
     }
 
-    double tanA  = std::tan(angle);
-    double halfW = width / 2.0;
-    double halfD = depth / 2.0;
+    const RectangularPatch& patch = boundary.wall;
+    const Vec3 height_axis = patch.heightAxis();
+    const Vec3 width_offset = patch.width_axis * (0.5 * patch.width);
+    const Vec3 height_offset = height_axis * (0.5 * patch.height);
 
-    // Plane: z = tanA*x + affz
-    double x0 = -halfW;
-    double x1 =  halfW;
-    double y0 = -halfD;
-    double y1 =  halfD;
-
-    double z_x0 = tanA * x0 + affz;
-    double z_x1 = tanA * x1 + affz;
-
-    Vec3 normal = {-tanA, 0.0, 1.0};
-    normal = normal.normalized();
+    const Vec3 p0 = patch.plane.point - width_offset - height_offset;
+    const Vec3 p1 = patch.plane.point + width_offset - height_offset;
+    const Vec3 p2 = patch.plane.point - width_offset + height_offset;
+    const Vec3 p3 = patch.plane.point + width_offset + height_offset;
 
     file << "# vtk DataFile Version 3.0\n";
     file << "Inclined Plane\n";
@@ -68,10 +60,10 @@ void writePlaneVTK(double angle, double width, double depth,
     file << "DATASET POLYDATA\n";
 
     file << "POINTS 4 float\n";
-    file << x0 << " " << y0 << " " << z_x0 << "\n";
-    file << x1 << " " << y0 << " " << z_x1 << "\n";
-    file << x0 << " " << y1 << " " << z_x0 << "\n";
-    file << x1 << " " << y1 << " " << z_x1 << "\n";
+    file << p0.x << " " << p0.y << " " << p0.z << "\n";
+    file << p1.x << " " << p1.y << " " << p1.z << "\n";
+    file << p2.x << " " << p2.y << " " << p2.z << "\n";
+    file << p3.x << " " << p3.y << " " << p3.z << "\n";
 
     file << "\nPOLYGONS 2 8\n";
     file << "3 0 1 2\n";
@@ -80,7 +72,8 @@ void writePlaneVTK(double angle, double width, double depth,
     file << "\nPOINT_DATA 4\n";
     file << "NORMALS normals float\n";
     for (int i = 0; i < 4; ++i)
-        file << normal.x << " " << normal.y << " " << normal.z << "\n";
+        file << patch.plane.normal.x << " " << patch.plane.normal.y
+             << " " << patch.plane.normal.z << "\n";
 }
 
 
