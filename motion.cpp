@@ -1,7 +1,5 @@
 #include "motion.h"
 #include "contact.h"
-#include "boundary.h"
-#include <vector>
 
 void computeForces(std::vector<Particle>& particles,
                    const std::vector<Contact>& contacts,
@@ -27,7 +25,7 @@ void velocityVerlet(std::vector<Particle>& particles, double dt,
 
     // Step 1: Update positions and save accelerations
     std::vector<Vec3> accOld(particles.size());
-    for (size_t i = 0; i < particles.size(); ++i) {
+    for (std::size_t i = 0; i < particles.size(); ++i) {
         accOld[i]          = particles[i].acc;
         particles[i].pos   = particles[i].pos + particles[i].vel * dt + particles[i].acc * (0.5 * dt * dt);
     }
@@ -47,7 +45,7 @@ void velocityVerlet(std::vector<Particle>& particles, double dt,
     }
 
     // Step 3: Complete velocity Verlet algorithm by averaging new and old acceleration for the velocity
-    for (size_t i = 0; i < particles.size(); ++i) {
+    for (std::size_t i = 0; i < particles.size(); ++i) {
         particles[i].vel = particles[i].vel + (accOld[i] + particles[i].acc) * (0.5 * dt);
     }
 }

@@ -1,7 +1,7 @@
-#include <vector>
-#include <numeric>
-#include <algorithm>
 #include "contact.h"
+
+#include <algorithm>
+#include <numeric>
 
 
 std::vector<Contact> detectContact_SP(std::vector<Particle>& particles) {

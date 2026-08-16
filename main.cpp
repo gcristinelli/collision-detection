@@ -3,6 +3,7 @@
 #include "motion.h"
 #include "boundary.h"
 #include "output.h"
+#include "particles.h"
 #include <vector>
 
 int main() {

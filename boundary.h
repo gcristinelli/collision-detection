@@ -1,7 +1,7 @@
-#include "motion.h"
-
 #ifndef BOUNDARY_H
 #define BOUNDARY_H
+
+#include "particles.h"
 
 struct Plane {
 	Vec3 point;

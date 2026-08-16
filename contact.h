@@ -1,8 +1,9 @@
-#include "motion.h"
-
 #ifndef CONTACT_H
 #define CONTACT_H
 
+#include <vector>
+
+#include "particles.h"
 
 struct Contact {
     int i, j;
