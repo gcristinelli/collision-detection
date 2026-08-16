@@ -1,6 +1,9 @@
 #ifndef PARTICLES_H
 #define PARTICLES_H
 
+#include <string>
+#include <vector>
+
 #include "utils.h"
 
 struct Material {
@@ -16,5 +19,8 @@ struct Particle {
     Vec3 pos, vel, acc;
     double radius, mass;
 };
+
+std::vector<Particle> loadParticlesCsv(const std::string& filename,
+                                       const Vec3& initial_acceleration);
 
 #endif

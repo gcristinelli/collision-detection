@@ -10,15 +10,15 @@ int main() {
     // Parameters
     const double dt = 1e-4;
     const double stiffness = 1e7;
-    const double damping = 0.3;
+    const double damping = 0.6;
     const Vec3 gravity = {0.0, 0.0, -9.81};
     const double planeAngle = 5.0 * std::acos(-1.0) / 180.0;
-    const double planeWidth = 50.0;
-    const double planeDepth = 50.0;
+    const double planeWidth = 40.0;
+    const double planeDepth = 40.0;
     const double planeAffz = 0.5;
-    const double wallHeight = 20.0;
+    const double wallHeight = 10.0;
     const int numSteps = 50000;
-    const int outputInterval = 100;
+    const int outputInterval = 200;
 
     const BoundaryMaterial wallMaterial = {stiffness, damping};
     const std::vector<Boundary> boundaries = {
@@ -49,13 +49,7 @@ int main() {
          wallMaterial}
     };
 
-    // Initialize particles
-    std::vector<Particle> particles;
-    particles.push_back({{-0.9, 0.5, 3.5}, {0.0, 0.0,0.0}, gravity, 0.4, 150.0});
-    particles.push_back({{0.0, 0.5, 6}, {0.0, 0.0,-3.0}, gravity, 0.3, 50.0});
-    particles.push_back({{0.0, 0.5, 4}, {0.0, 0.0,0.0}, gravity, 0.4, 50.0});
-    particles.push_back({{0.0, 0.6, 1.5}, {0.0, 0.0, 0}, gravity, 0.3, 2.0});
-    particles.push_back({{0.0, 0.5, 3}, {0.0, 0.0, 2}, gravity, 0.2, 10.0});
+    std::vector<Particle> particles = loadParticlesCsv("particles.csv", gravity);
 
     writeBoundariesVTK(boundaries, "boundaries");
 
