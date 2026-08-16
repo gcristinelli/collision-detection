@@ -6,11 +6,6 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
-#include <cmath>
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 std::filesystem::path create_folder() {
     namespace fs = std::filesystem;
@@ -36,44 +31,55 @@ std::filesystem::path create_folder() {
     return outputDir;
 }
 
-void writeBoundaryVTK(const Boundary& boundary, const std::string& prefix) {
+void writeBoundariesVTK(const std::vector<Boundary>& boundaries,
+                        const std::string& prefix) {
     std::filesystem::path dir = create_folder();
     std::ofstream file(dir / (prefix + ".vtk"));
     if (!file) {
-        std::cerr << "Failed to open plane VTK file\n";
+        std::cerr << "Failed to open boundary VTK file\n";
         return;
     }
 
-    const RectangularPatch& patch = boundary.wall;
-    const Vec3 height_axis = patch.heightAxis();
-    const Vec3 width_offset = patch.width_axis * (0.5 * patch.width);
-    const Vec3 height_offset = height_axis * (0.5 * patch.height);
-
-    const Vec3 p0 = patch.plane.point - width_offset - height_offset;
-    const Vec3 p1 = patch.plane.point + width_offset - height_offset;
-    const Vec3 p2 = patch.plane.point - width_offset + height_offset;
-    const Vec3 p3 = patch.plane.point + width_offset + height_offset;
-
     file << "# vtk DataFile Version 3.0\n";
-    file << "Inclined Plane\n";
+    file << "DEM boundaries\n";
     file << "ASCII\n";
     file << "DATASET POLYDATA\n";
 
-    file << "POINTS 4 float\n";
-    file << p0.x << " " << p0.y << " " << p0.z << "\n";
-    file << p1.x << " " << p1.y << " " << p1.z << "\n";
-    file << p2.x << " " << p2.y << " " << p2.z << "\n";
-    file << p3.x << " " << p3.y << " " << p3.z << "\n";
+    file << "POINTS " << 4 * boundaries.size() << " float\n";
+    for (const Boundary& boundary : boundaries) {
+        const RectangularPatch& patch = boundary.wall;
+        const Vec3 height_axis = patch.heightAxis();
+        const Vec3 width_offset = patch.width_axis * (0.5 * patch.width);
+        const Vec3 height_offset = height_axis * (0.5 * patch.height);
 
-    file << "\nPOLYGONS 2 8\n";
-    file << "3 0 1 2\n";
-    file << "3 1 3 2\n";
+        const Vec3 p0 = patch.plane.point - width_offset - height_offset;
+        const Vec3 p1 = patch.plane.point + width_offset - height_offset;
+        const Vec3 p2 = patch.plane.point - width_offset + height_offset;
+        const Vec3 p3 = patch.plane.point + width_offset + height_offset;
 
-    file << "\nPOINT_DATA 4\n";
+        file << p0.x << " " << p0.y << " " << p0.z << "\n";
+        file << p1.x << " " << p1.y << " " << p1.z << "\n";
+        file << p2.x << " " << p2.y << " " << p2.z << "\n";
+        file << p3.x << " " << p3.y << " " << p3.z << "\n";
+    }
+
+    file << "\nPOLYGONS " << 2 * boundaries.size()
+         << " " << 8 * boundaries.size() << "\n";
+    for (std::size_t i = 0; i < boundaries.size(); ++i) {
+        const std::size_t offset = 4 * i;
+        file << "3 " << offset << " " << offset + 1 << " " << offset + 2 << "\n";
+        file << "3 " << offset + 1 << " " << offset + 3 << " " << offset + 2 << "\n";
+    }
+
+    file << "\nPOINT_DATA " << 4 * boundaries.size() << "\n";
     file << "NORMALS normals float\n";
-    for (int i = 0; i < 4; ++i)
-        file << patch.plane.normal.x << " " << patch.plane.normal.y
-             << " " << patch.plane.normal.z << "\n";
+    for (const Boundary& boundary : boundaries) {
+        for (int i = 0; i < 4; ++i) {
+            file << boundary.wall.plane.normal.x << " "
+                 << boundary.wall.plane.normal.y << " "
+                 << boundary.wall.plane.normal.z << "\n";
+        }
+    }
 }
 
 

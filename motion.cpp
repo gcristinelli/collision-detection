@@ -23,7 +23,7 @@ void computeForces(std::vector<Particle>& particles,
 
 void velocityVerlet(std::vector<Particle>& particles, double dt,
                     double stiffness, const Vec3& gravity,
-                    const Boundary& boundary) {
+                    const std::vector<Boundary>& boundaries) {
 
     // Step 1: Update positions and save accelerations
     std::vector<Vec3> accOld(particles.size());
@@ -38,9 +38,11 @@ void velocityVerlet(std::vector<Particle>& particles, double dt,
 
     // Apply boundary conditions
     for (auto& p : particles) {
-        const SurfaceQuery query = closestPoint(boundary.wall, p.pos);
-        if (query.distance_squared < p.radius * p.radius) {
-            applyBoundaryContact(p, boundary, query);
+        for (const Boundary& boundary : boundaries) {
+            const SurfaceQuery query = closestPoint(boundary.wall, p.pos);
+            if (query.distance_squared < p.radius * p.radius) {
+                applyBoundaryContact(p, boundary, query);
+            }
         }
     }
 

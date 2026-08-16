@@ -9,6 +9,7 @@
 void writeVTK(const std::vector<Particle>& particles, int step,
               const std::string& prefix);
 
-void writeBoundaryVTK(const Boundary& boundary, const std::string& prefix);
+void writeBoundariesVTK(const std::vector<Boundary>& boundaries,
+                        const std::string& prefix);
 
 #endif

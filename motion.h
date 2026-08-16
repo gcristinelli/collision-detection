@@ -27,6 +27,6 @@ struct Boundary;
 
 void velocityVerlet(std::vector<Particle>& particles, double dt,
                     double stiffness, const Vec3& gravity,
-                    const Boundary& boundary);
+                    const std::vector<Boundary>& boundaries);
 
 #endif

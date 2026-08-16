@@ -11,20 +11,41 @@ int main() {
     const double stiffness = 1e7;
     const double damping = 0.3;
     const Vec3 gravity = {0.0, 0.0, -9.81};
-    const double planeAngle = 15.0 * std::acos(-1.0) / 180.0;
+    const double planeAngle = 5.0 * std::acos(-1.0) / 180.0;
     const double planeWidth = 50.0;
     const double planeDepth = 50.0;
     const double planeAffz = 0.5;
+    const double wallHeight = 20.0;
     const int numSteps = 50000;
     const int outputInterval = 100;
 
-    const Boundary plane = {
-        makeRectangularPatch(
-            {0.0, 0.0, planeAffz},
-            {-std::sin(planeAngle), 0.0, std::cos(planeAngle)},
-            {std::cos(planeAngle), 0.0, std::sin(planeAngle)},
-            planeWidth / std::cos(planeAngle), planeDepth),
-        {stiffness, damping}
+    const BoundaryMaterial wallMaterial = {stiffness, damping};
+    const std::vector<Boundary> boundaries = {
+        // Inclined floor: z = tan(planeAngle) * x + planeAffz.
+        {makeRectangularPatch(
+             {0.0, 0.0, planeAffz},
+             {-std::sin(planeAngle), 0.0, std::cos(planeAngle)},
+             {std::cos(planeAngle), 0.0, std::sin(planeAngle)},
+             planeWidth / std::cos(planeAngle), planeDepth),
+         wallMaterial},
+
+        // Four vertical walls enclosing the floor footprint.
+        {makeRectangularPatch(
+             {-0.5 * planeWidth, 0.0, planeAffz},
+             {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, planeDepth, wallHeight),
+         wallMaterial},
+        {makeRectangularPatch(
+             {0.5 * planeWidth, 0.0, planeAffz},
+             {-1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, planeDepth, wallHeight),
+         wallMaterial},
+        {makeRectangularPatch(
+             {0.0, -0.5 * planeDepth, planeAffz},
+             {0.0, 1.0, 0.0}, {1.0, 0.0, 0.0}, planeWidth, wallHeight),
+         wallMaterial},
+        {makeRectangularPatch(
+             {0.0, 0.5 * planeDepth, planeAffz},
+             {0.0, -1.0, 0.0}, {1.0, 0.0, 0.0}, planeWidth, wallHeight),
+         wallMaterial}
     };
 
     // Initialize particles
@@ -35,11 +56,11 @@ int main() {
     particles.push_back({{0.0, 0.6, 1.5}, {0.0, 0.0, 0}, gravity, 0.3, 2.0});
     particles.push_back({{0.0, 0.5, 3}, {0.0, 0.0, 2}, gravity, 0.2, 10.0});
 
-    writeBoundaryVTK(plane, "plane");
+    writeBoundariesVTK(boundaries, "boundaries");
 
     // Time loop
     for (int step = 0; step < numSteps; step++) {
-        velocityVerlet(particles, dt, stiffness, gravity, plane);
+        velocityVerlet(particles, dt, stiffness, gravity, boundaries);
 
         if (step % outputInterval == 0) {
             writeVTK(particles, step/outputInterval, "particles_");
